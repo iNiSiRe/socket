@@ -12,7 +12,8 @@ class Connection extends Stream implements ConnectionInterface
         // See issues #192, #209, and #240
         $data = stream_socket_recvfrom($stream, $this->bufferSize);
         if ('' !== $data && false !== $data) {
-            $this->emit('data', array($data, $this));
+            $end = stream_socket_recvfrom($stream, 1, STREAM_PEEK) === false;
+            $this->emit('data', array($data, $this, $end));
         }
 
         if ('' === $data || false === $data || !is_resource($stream) || feof($stream)) {
